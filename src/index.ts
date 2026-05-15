@@ -2,7 +2,7 @@ import app from "./app";
 import { McpAgent } from "agents/mcp";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
-import OAuthProvider from "@cloudflare/workers-oauth-provider";
+import OAuthProvider, { type OAuthProviderOptions } from "@cloudflare/workers-oauth-provider";
 
 export class MyMCP extends McpAgent {
 	server = new McpServer({
@@ -20,11 +20,8 @@ export class MyMCP extends McpAgent {
 // Export the OAuth handler as the default
 export default new OAuthProvider({
 	apiRoute: "/sse",
-	// TODO: fix these types
-	// @ts-ignore
-	apiHandler: MyMCP.mount("/sse"),
-	// @ts-ignore
-	defaultHandler: app,
+	apiHandler: MyMCP.mount("/sse") as unknown as OAuthProviderOptions["apiHandler"],
+	defaultHandler: app as unknown as OAuthProviderOptions["defaultHandler"],
 	authorizeEndpoint: "/authorize",
 	tokenEndpoint: "/token",
 	clientRegistrationEndpoint: "/register",
